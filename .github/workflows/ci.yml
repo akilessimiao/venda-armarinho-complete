@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+    
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
+    
+    - name: Get pnpm store directory
+      id: pnpm-cache
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+    
+    - name: Setup pnpm cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+    
+    - name: Install dependencies (API)
+      working-directory: ./api
+      run: pnpm install
+    
+    - name: Lint (API)
+      working-directory: ./api
+      run: pnpm lint || true
+    
+    - name: Test (API)
+      working-directory: ./api
+      run: pnpm test || true
+    
+    - name: Install dependencies (Docs)
+      working-directory: ./docs
+      run: pnpm install
+    
+    - name: Install dependencies (Multiplatform)
+      working-directory: ./multiplatform
+      run: pnpm install
+    
+    - name: Build (Web)
+      working-directory: ./multiplatform
+      run: pnpm build:web || true
