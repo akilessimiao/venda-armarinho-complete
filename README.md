@@ -343,8 +343,8 @@ Encontrou um bug? Abra uma [issue](https://github.com/akilessimiao/venda-armarin
 
 ## 💬 Suporte
 
-- 📧 Email: contato@vendaarmarinho.com.br
-- 📱 WhatsApp: 84 99999-9999
+- 📧 Email: ldtnettelecom@gmail.com
+- 📱 WhatsApp: 84 99453-3322
 - 🔗 GitHub Issues: [Abrir issue](https://github.com/akilessimiao/venda-armarinho-complete/issues)
 
 ## 📄 Licença
