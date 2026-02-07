@@ -1,10 +1,10 @@
-<!-- login.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Venda Armarinho</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -19,136 +19,344 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
         
         .login-container {
             background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .login-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .login-header i {
+            font-size: 60px;
+            color: #667eea;
+            margin-bottom: 15px;
         }
         
         .login-header h1 {
-            color: #667eea;
-            font-size: 28px;
+            color: #333;
+            font-size: 32px;
             margin-bottom: 10px;
+            font-weight: 700;
         }
         
         .login-header p {
             color: #666;
-            font-size: 14px;
+            font-size: 15px;
+            margin-top: 8px;
         }
         
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            position: relative;
         }
         
         .input-group label {
             display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
+            margin-bottom: 10px;
+            color: #444;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.5px;
         }
         
         .input-group input {
             width: 100%;
-            padding: 12px 15px;
+            padding: 14px 15px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: #f9f9f9;
         }
         
         .input-group input:focus {
             outline: none;
             border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
         
         .btn-login {
             width: 100%;
-            padding: 12px;
-            background: #667eea;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 17px;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
         
         .btn-login:hover {
-            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        
+        .btn-login:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
         }
         
         .error-message {
             background: #ffebee;
             color: #c62828;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 15px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 20px;
             display: none;
+            border-left: 4px solid #c62828;
+            animation: slideDown 0.3s ease-in;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            color: #555;
+        }
+        
+        .remember-me input {
+            margin-right: 10px;
+            width: auto;
+        }
+        
+        .login-footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #888;
+            font-size: 13px;
+        }
+        
+        .login-footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .demo-credentials {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 25px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .demo-credentials h4 {
+            color: #667eea;
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .demo-credentials p {
+            color: #555;
+            font-size: 13px;
+            margin: 5px 0;
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 35px 25px;
+                margin: 10px;
+            }
+            
+            .login-header h1 {
+                font-size: 26px;
+            }
+            
+            .login-header i {
+                font-size: 45px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="login-container">
         <div class="login-header">
-            <h1>🛒 Venda Armarinho</h1>
-            <p>Acesse sua conta para continuar</p>
+            <i class="fas fa-shopping-bag"></i>
+            <h1>Venda Armarinho</h1>
+            <p>Sistema de Gestão de Vendas</p>
         </div>
         
         <form id="loginForm">
             <div class="input-group">
-                <label for="username">Usuário</label>
-                <input type="text" id="username" name="username" required autocomplete="username">
+                <label for="username"><i class="fas fa-user"></i> Usuário</label>
+                <input type="text" id="username" name="username" required autocomplete="username" placeholder="Digite seu usuário">
             </div>
             
             <div class="input-group">
-                <label for="password">Senha</label>
-                <input type="password" id="password" name="password" required autocomplete="current-password">
+                <label for="password"><i class="fas fa-lock"></i> Senha</label>
+                <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Digite sua senha">
             </div>
             
-            <button type="submit" class="btn-login">Entrar</button>
+            <div class="remember-me">
+                <input type="checkbox" id="remember" name="remember">
+                <label for="remember" style="display: inline; margin: 0;">Lembrar-me neste dispositivo</label>
+            </div>
             
-            <div id="errorMessage" class="error-message"></div>
+            <button type="submit" class="btn-login" id="loginBtn">
+                <i class="fas fa-sign-in-alt"></i> Entrar
+            </button>
+            
+            <div id="errorMessage" class="error-message">
+                <i class="fas fa-exclamation-triangle"></i> 
+                <span id="errorText"></span>
+            </div>
+            
+            <div class="demo-credentials">
+                <h4><i class="fas fa-info-circle"></i> Credenciais de Demonstração</h4>
+                <p><strong>Admin:</strong> admin / admin123</p>
+                <p><strong>Operador:</strong> operador / operador123</p>
+            </div>
         </form>
+        
+        <div class="login-footer">
+            <p>Versão 1.0 • © 2026 Venda Armarinho</p>
+        </div>
     </div>
     
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
             const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            const loginBtn = document.getElementById('loginBtn');
             
-            // Credenciais padrão (você pode armazenar no localStorage ou usar API)
-            const users = {
-                'admin': { password: 'admin123', role: 'admin', redirect: 'index.html' },
-                'operador': { password: 'operador123', role: 'operador', redirect: 'index.html' }
-            };
+            // Verificar se já está logado
+            if (localStorage.getItem('isLoggedIn') === 'true') {
+                const userRole = localStorage.getItem('userRole');
+                if (userRole === 'admin') {
+                    window.location.href = 'index.html';
+                } else {
+                    window.location.href = 'index.html';
+                }
+            }
             
-            const user = users[username];
+            // Carregar usuário salvo se existir
+            if (localStorage.getItem('rememberMeUser')) {
+                document.getElementById('username').value = localStorage.getItem('rememberMeUser');
+                document.getElementById('remember').checked = true;
+            }
             
-            if (user && user.password === password) {
-                // Salvar informações do usuário
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userRole', user.role);
-                localStorage.setItem('username', username);
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
                 
-                // Redirecionar
-                window.location.href = user.redirect;
-            } else {
-                errorMessage.textContent = 'Usuário ou senha inválidos!';
-                errorMessage.style.display = 'block';
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value;
+                const rememberMe = document.getElementById('remember').checked;
+                
+                // Desabilitar botão durante o processamento
+                loginBtn.disabled = true;
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+                
+                // Simular delay para melhor UX
+                setTimeout(() => {
+                    // Credenciais padrão
+                    const users = {
+                        'admin': { 
+                            password: 'admin123', 
+                            role: 'admin', 
+                            name: 'Administrador',
+                            redirect: 'index.html'
+                        },
+                        'operador': { 
+                            password: 'operador123', 
+                            role: 'operador', 
+                            name: 'Operador',
+                            redirect: 'index.html'
+                        }
+                    };
+                    
+                    const user = users[username];
+                    
+                    if (user && user.password === password) {
+                        // Salvar informações do usuário
+                        localStorage.setItem('isLoggedIn', 'true');
+                        localStorage.setItem('userRole', user.role);
+                        localStorage.setItem('username', username);
+                        localStorage.setItem('userName', user.name);
+                        localStorage.setItem('loginTime', new Date().toISOString());
+                        
+                        // Salvar usuário para "Lembrar-me"
+                        if (rememberMe) {
+                            localStorage.setItem('rememberMeUser', username);
+                        } else {
+                            localStorage.removeItem('rememberMeUser');
+                        }
+                        
+                        // Mensagem de sucesso
+                        errorMessage.className = 'error-message';
+                        errorMessage.style.background = '#e8f5e9';
+                        errorMessage.style.color = '#2e7d32';
+                        errorMessage.style.borderLeftColor = '#2e7d32';
+                        errorText.innerHTML = '<i class="fas fa-check-circle"></i> Login realizado com sucesso! Redirecionando...';
+                        errorMessage.classList.add('show');
+                        
+                        // Redirecionar após 1 segundo
+                        setTimeout(() => {
+                            window.location.href = user.redirect;
+                        }, 1000);
+                        
+                    } else {
+                        // Erro de login
+                        errorText.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Usuário ou senha inválidos!';
+                        errorMessage.style.background = '#ffebee';
+                        errorMessage.style.color = '#c62828';
+                        errorMessage.style.borderLeftColor = '#c62828';
+                        errorMessage.classList.add('show');
+                        
+                        // Habilitar botão novamente
+                        loginBtn.disabled = false;
+                        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar';
+                    }
+                }, 800);
+            });
+            
+            // Limpar mensagem de erro ao digitar
+            document.getElementById('username').addEventListener('input', clearError);
+            document.getElementById('password').addEventListener('input', clearError);
+            
+            function clearError() {
+                errorMessage.classList.remove('show');
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar';
             }
         });
     </script>
