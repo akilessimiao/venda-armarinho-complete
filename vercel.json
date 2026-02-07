@@ -3,7 +3,21 @@
   "rewrites": [
     { "source": "/", "destination": "/login.html" },
     { "source": "/index", "destination": "/index.html" },
-    { "source": "/index.html", "destination": "/index.html" }
+    { "source": "/index.html", "destination": "/index.html" },
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/admin.html", "destination": "/admin.html" },
+    { "source": "/produtos", "destination": "/produtos.html" },
+    { "source": "/produtos.html", "destination": "/produtos.html" },
+    { "source": "/estoque", "destination": "/estoque.html" },
+    { "source": "/estoque.html", "destination": "/estoque.html" },
+    { "source": "/leitura-z", "destination": "/leitura-z.html" },
+    { "source": "/leitura-z.html", "destination": "/leitura-z.html" },
+    { "source": "/sangria", "destination": "/sangria.html" },
+    { "source": "/sangria.html", "destination": "/sangria.html" },
+    { "source": "/relatorios", "destination": "/relatorios.html" },
+    { "source": "/relatorios.html", "destination": "/relatorios.html" },
+    { "source": "/cupom", "destination": "/cupom.html" },
+    { "source": "/cupom.html", "destination": "/cupom.html" }
   ],
   "redirects": [
     { "source": "/home", "destination": "/index.html", "permanent": true },

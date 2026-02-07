@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cupom - JAVA CONVENIÊNCIA 24H</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .navbar-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: white;
+            color: #1e3c72;
+        }
+        
+        .btn-primary:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        .page-header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .page-title {
+            font-size: 32px;
+            color: #1e3c72;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .search-box {
+            max-width: 500px;
+            margin: 20px auto;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 3px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: #1e3c72;
+            box-shadow: 0 0 0 4px rgba(30, 60, 114, 0.15);
+        }
+        
+        .search-box input::placeholder {
+            color: #999;
+        }
+        
+        .cupom-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin: 30px auto;
+            border: 2px dashed #1e3c72;
+        }
+        
+        .cupom-header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #1e3c72;
+            padding-bottom: 15px;
+        }
+        
+        .cupom-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 5px;
+        }
+        
+        .cupom-subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .cupom-info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .info-label {
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .info-value {
+            color: #1e3c72;
+            font-weight: 700;
+        }
+        
+        .cupom-items {
+            margin-bottom: 20px;
+        }
+        
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #ddd;
+            font-size: 14px;
+        }
+        
+        .item-name {
+            flex: 2;
+            color: #333;
+        }
+        
+        .item-qty {
+            flex: 1;
+            text-align: center;
+            color: #666;
+        }
+        
+        .item-price {
+            flex: 1;
+            text-align: right;
+            color: #1e3c72;
+            font-weight: 700;
+        }
+        
+        .cupom-total {
+            text-align: right;
+            padding: 20px 0;
+            border-top: 3px double #1e3c72;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+        }
+        
+        .total-label {
+            color: #666;
+            font-weight: 600;
+            margin-right: 20px;
+        }
+        
+        .total-value {
+            color: #1e3c72;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        
+        .btn-print {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #4caf50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+        }
+        
+        .btn-print:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.6);
+        }
+        
+        .history-list {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .history-list h3 {
+            font-size: 20px;
+            color: #1e3c72;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-align: center;
+        }
+        
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .history-table th {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .history-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .history-table tr:hover {
+            background: #f8f9fa;
+            cursor: pointer;
+        }
+        
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 60, 114, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            color: white;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-top: 5px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .navbar, .page-header, .search-box, .history-list, .btn-print {
+                display: none !important;
+            }
+            
+            .cupom-container {
+                box-shadow: none;
+                border: none;
+                padding: 20px;
+                max-width: 100%;
+                margin: 0 auto;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .cupom-container {
+                padding: 25px 15px;
+            }
+            
+            .item-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .item-qty, .item-price {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div>Carregando cupons...</div>
+    </div>
+    
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <i class="fas fa-receipt"></i>
+            <span>Reimpressão de Cupom</span>
+        </div>
+        <div class="navbar-actions">
+            <button class="btn btn-secondary" onclick="window.location.href='admin.html'">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">📄 Reimpressão de Cupom Fiscal</h1>
+            <p>Busque e reimprima cupons anteriores</p>
+        </div>
+        
+        <!-- Search Box -->
+        <div class="search-box">
+            <input type="text" id="searchCupom" placeholder="Digite o ID da venda ou código do cupom..." oninput="searchCupom()">
+        </div>
+        
+        <!-- Cupom Preview -->
+        <div class="cupom-container" id="cupomPreview" style="display: none;">
+            <div class="cupom-header">
+                <div class="cupom-title">JAVA CONVENIÊNCIA 24H</div>
+                <div class="cupom-subtitle">CNPJ: 00.000.000/0000-00</div>
+                <div class="cupom-subtitle">Rua das Palmeiras, 123 - Centro</div>
+                <div class="cupom-subtitle">Telefone: (84) 99999-9999</div>
+            </div>
+            
+            <div class="cupom-info" id="cupomInfo">
+                <!-- Informações serão carregadas aqui -->
+            </div>
+            
+            <div class="cupom-items" id="cupomItems">
+                <div class="item-row">
+                    <div class="item-name"><strong>Produto</strong></div>
+                    <div class="item-qty"><strong>Qtd</strong></div>
+                    <div class="item-price"><strong>Valor</strong></div>
+                </div>
+                <!-- Itens serão carregados aqui -->
+            </div>
+            
+            <div class="cupom-total" id="cupomTotal">
+                <!-- Total será carregado aqui -->
+            </div>
+            
+            <div style="text-align: center; padding: 20px 0; border-top: 1px dashed #ddd; font-size: 12px; color: #666;">
+                <p>Obrigado pela preferência!</p>
+                <p>Volte sempre!</p>
+                <p>Data: <span id="printDate"></span></p>
+            </div>
+            
+            <button class="btn-print" onclick="printCupom()">
+                <i class="fas fa-print"></i> Imprimir Cupom
+            </button>
+        </div>
+        
+        <!-- History List -->
+        <div class="history-list">
+            <h3><i class="fas fa-history"></i> Histórico de Vendas Recentes</h3>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Data/Hora</th>
+                        <th>ID Venda</th>
+                        <th>Cliente</th>
+                        <th>Valor</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody">
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px; color: #999;">
+                            <i class="fas fa-hourglass-half" style="font-size: 40px; margin-bottom: 10px;"></i>
+                            <p>Carregando histórico de vendas...</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script src="config.js"></script>
+    <script>
+        let allVendas = [];
+        
+        // Verificar login
+        document.addEventListener('DOMContentLoaded', async function() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            
+            if (!auth.isLoggedIn() || !auth.checkSession()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Carregar histórico
+            await loadHistory();
+            
+            // Esconder loading
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+            }, 500);
+        });
+        
+        async function loadHistory() {
+            try {
+                allVendas = await vendas.getAll();
+                
+                if (allVendas.length === 0) {
+                    document.getElementById('historyBody').innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 40px; color: #999;">
+                                <i class="fas fa-receipt" style="font-size: 40px; margin-bottom: 10px;"></i>
+                                <p>Nenhuma venda registrada</p>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                // Mostrar apenas as 20 vendas mais recentes
+                const recentVendas = allVendas.slice(0, 20);
+                
+                document.getElementById('historyBody').innerHTML = recentVendas.map(venda => `
+                    <tr onclick="loadCupom(${venda.id})">
+                        <td>${utils.formatDate(venda.created_at)}</td>
+                        <td>#${venda.id}</td>
+                        <td>${venda.cliente_nome || 'Não informado'}</td>
+                        <td><strong>${utils.formatMoney(venda.total)}</strong></td>
+                        <td>
+                            <button class="btn btn-primary" style="padding: 5px 10px; font-size: 13px;" onclick="event.stopPropagation(); loadCupom(${venda.id})">
+                                <i class="fas fa-eye"></i> Visualizar
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Erro ao carregar histórico:', error);
+                utils.showToast('Erro ao carregar histórico', 'error');
+            }
+        }
+        
+        async function searchCupom() {
+            const searchTerm = document.getElementById('searchCupom').value.trim();
+            
+            if (searchTerm.length < 3) {
+                return;
+            }
+            
+            try {
+                // Buscar por ID da venda
+                const venda = allVendas.find(v => 
+                    v.id.toString() === searchTerm ||
+                    (v.cupom_number && v.cupom_number.includes(searchTerm))
+                );
+                
+                if (venda) {
+                    await loadCupom(venda.id);
+                } else {
+                    utils.showToast('Cupom não encontrado', 'error');
+                }
+            } catch (error) {
+                console.error('Erro ao buscar cupom:', error);
+            }
+        }
+        
+        async function loadCupom(vendaId) {
+            try {
+                const venda = await vendas.getById(vendaId);
+                
+                if (!venda) {
+                    utils.showToast('Venda não encontrada', 'error');
+                    return;
+                }
+                
+                const itens = await itensVenda.getByVendaId(vendaId);
+                
+                // Preencher informações
+                document.getElementById('cupomInfo').innerHTML = `
+                    <div class="info-row">
+                        <span class="info-label">Venda:</span>
+                        <span class="info-value">#${venda.id}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Data:</span>
+                        <span class="info-value">${utils.formatDate(venda.created_at)}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Operador:</span>
+                        <span class="info-value">${venda.operador_id}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Cliente:</span>
+                        <span class="info-value">${venda.cliente_nome || 'Não informado'}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">CPF/CNPJ:</span>
+                        <span class="info-value">${venda.cliente_documento || '-'}</span>
+                    </div>
+                `;
+                
+                // Preencher itens
+                let itemsHtml = `
+                    <div class="item-row">
+                        <div class="item-name"><strong>Produto</strong></div>
+                        <div class="item-qty"><strong>Qtd</strong></div>
+                        <div class="item-price"><strong>Valor</strong></div>
+                    </div>
+                `;
+                
+                itens.forEach(item => {
+                    itemsHtml += `
+                        <div class="item-row">
+                            <div class="item-name">${item.produto_nome || item.produto_id}</div>
+                            <div class="item-qty">${item.quantidade}x</div>
+                            <div class="item-price">${utils.formatMoney(item.preco_unitario)}</div>
+                        </div>
+                    `;
+                });
+                
+                document.getElementById('cupomItems').innerHTML = itemsHtml;
+                
+                // Preencher total
+                document.getElementById('cupomTotal').innerHTML = `
+                    <div class="total-row">
+                        <span class="total-label">Subtotal:</span>
+                        <span class="total-value">${utils.formatMoney(venda.total)}</span>
+                    </div>
+                    <div class="total-row">
+                        <span class="total-label">Descontos:</span>
+                        <span class="total-value">${utils.formatMoney(venda.desconto || 0)}</span>
+                    </div>
+                    <div class="total-row" style="margin-top: 10px; font-size: 22px;">
+                        <span class="total-label">TOTAL:</span>
+                        <span class="total-value">${utils.formatMoney(venda.total)}</span>
+                    </div>
+                `;
+                
+                // Data de impressão
+                document.getElementById('printDate').textContent = new Date().toLocaleString('pt-BR');
+                
+                // Mostrar cupom
+                document.getElementById('cupomPreview').style.display = 'block';
+                
+                // Rolar até o cupom
+                document.getElementById('cupomPreview').scrollIntoView({ behavior: 'smooth' });
+                
+            } catch (error) {
+                console.error('Erro ao carregar cupom:', error);
+                utils.showToast('Erro ao carregar cupom', 'error');
+            }
+        }
+        
+        function printCupom() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

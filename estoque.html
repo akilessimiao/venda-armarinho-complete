@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estoque - JAVA CONVENIÊNCIA 24H</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .navbar-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: white;
+            color: #1e3c72;
+        }
+        
+        .btn-primary:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #45a049;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        .page-header {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-title {
+            font-size: 28px;
+            color: #1e3c72;
+            font-weight: 700;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-box input {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 300px;
+        }
+        
+        .stock-grid {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        }
+        
+        .stock-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .stock-table th {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 120px;
+        }
+        
+        .stock-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+        
+        .stock-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .stock-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-block;
+        }
+        
+        .badge-low {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .badge-out {
+            background: #f44336;
+            color: white;
+        }
+        
+        .badge-ok {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .stock-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-add-stock, .btn-remove-stock {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        
+        .btn-add-stock {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .btn-add-stock:hover {
+            background: #45a049;
+        }
+        
+        .btn-remove-stock {
+            background: #f44336;
+            color: white;
+        }
+        
+        .btn-remove-stock:hover {
+            background: #d32f2f;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            animation: modalSlide 0.4s ease-in;
+        }
+        
+        @keyframes modalSlide {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #f0f0f0;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            color: #1e3c72;
+            font-weight: 700;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.3s;
+        }
+        
+        .modal-close:hover {
+            color: #1e3c72;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #1e3c72;
+        }
+        
+        .btn-save {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.4);
+        }
+        
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 60, 114, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            color: white;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-top: 5px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            .filters {
+                flex-direction: column;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
+            
+            .stats-bar {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div>Carregando estoque...</div>
+    </div>
+    
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <i class="fas fa-warehouse"></i>
+            <span>Controle de Estoque</span>
+        </div>
+        <div class="navbar-actions">
+            <button class="btn btn-secondary" onclick="window.location.href='admin.html'">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value" id="totalItems">0</div>
+                <div class="stat-label">Total de Itens</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="lowStock">0</div>
+                <div class="stat-label">Estoque Baixo</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="outStock">0</div>
+                <div class="stat-label">Sem Estoque</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalValue">R$ 0,00</div>
+                <div class="stat-label">Valor Total</div>
+            </div>
+        </div>
+        
+        <!-- Filters and Search -->
+        <div class="page-header">
+            <div class="page-title">
+                <i class="fas fa-boxes"></i> Lista de Produtos
+            </div>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Pesquisar produto..." oninput="filterProducts()">
+            </div>
+        </div>
+        
+        <!-- Stock Table -->
+        <div class="stock-grid">
+            <table class="stock-table" id="stockTable">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Produto</th>
+                        <th>Fornecedor</th>
+                        <th>Estoque</th>
+                        <th>Preço Custo</th>
+                        <th>Preço Venda</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="stockBody">
+                    <!-- Produtos serão carregados aqui -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Add Stock Modal -->
+    <div class="modal" id="stockModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalStockTitle">Adicionar Estoque</h3>
+                <button class="modal-close" onclick="closeStockModal()">&times;</button>
+            </div>
+            <form id="stockForm">
+                <input type="hidden" id="productId">
+                <input type="hidden" id="stockAction"> <!-- add ou remove -->
+                
+                <div class="form-group">
+                    <label for="productName">Produto</label>
+                    <input type="text" id="productName" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="currentStock">Estoque Atual</label>
+                    <input type="text" id="currentStock" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="quantity">Quantidade *</label>
+                    <input type="number" id="quantity" min="1" required>
+                </div>
+                
+                <button type="submit" class="btn-save" id="saveStockBtn">
+                    <i class="fas fa-save"></i> Confirmar
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <script src="config.js"></script>
+    <script>
+        let allProducts = [];
+        let currentFilter = 'all';
+        
+        // Verificar login
+        document.addEventListener('DOMContentLoaded', async function() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            
+            if (!auth.isLoggedIn() || !auth.checkSession()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Carregar produtos
+            await loadProducts();
+            
+            // Esconder loading
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+            }, 500);
+        });
+        
+        async function loadProducts() {
+            try {
+                allProducts = await produtos.getAll();
+                renderProducts();
+                updateStats();
+            } catch (error) {
+                console.error('Erro ao carregar produtos:', error);
+                utils.showToast('Erro ao carregar estoque', 'error');
+            }
+        }
+        
+        function renderProducts() {
+            const stockBody = document.getElementById('stockBody');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            
+            let filteredProducts = allProducts.filter(p => 
+                p.nome.toLowerCase().includes(search) ||
+                p.codigo_barras?.includes(search) ||
+                p.fornecedor?.toLowerCase().includes(search)
+            );
+            
+            if (filteredProducts.length === 0) {
+                stockBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: #999;">
+                            <i class="fas fa-box-open" style="font-size: 40px; margin-bottom: 10px;"></i>
+                            <p>Nenhum produto encontrado</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            stockBody.innerHTML = filteredProducts.map(product => {
+                let badgeClass = 'badge-ok';
+                let badgeText = 'Em Estoque';
+                
+                if (product.estoque === 0) {
+                    badgeClass = 'badge-out';
+                    badgeText = 'Sem Estoque';
+                } else if (product.estoque <= 5) {
+                    badgeClass = 'badge-low';
+                    badgeText = 'Estoque Baixo';
+                }
+                
+                return `
+                    <tr>
+                        <td><strong>${product.codigo_barras || 'N/A'}</strong></td>
+                        <td>${product.nome}</td>
+                        <td>${product.fornecedor || '-'}</td>
+                        <td>
+                            <span class="stock-badge ${badgeClass}">
+                                ${product.estoque} unidades
+                            </span>
+                        </td>
+                        <td>${utils.formatMoney(product.preco_custo)}</td>
+                        <td>${utils.formatMoney(product.preco_venda)}</td>
+                        <td>
+                            <div class="stock-actions">
+                                <button class="btn-add-stock" onclick="openAddStockModal(${product.id}, '${product.nome}', ${product.estoque})">
+                                    <i class="fas fa-plus"></i> Adicionar
+                                </button>
+                                <button class="btn-remove-stock" onclick="openRemoveStockModal(${product.id}, '${product.nome}', ${product.estoque})">
+                                    <i class="fas fa-minus"></i> Remover
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function updateStats() {
+            const totalItems = allProducts.length;
+            const lowStock = allProducts.filter(p => p.estoque > 0 && p.estoque <= 5).length;
+            const outStock = allProducts.filter(p => p.estoque === 0).length;
+            const totalValue = allProducts.reduce((sum, p) => sum + (p.preco_custo * p.estoque), 0);
+            
+            document.getElementById('totalItems').textContent = totalItems;
+            document.getElementById('lowStock').textContent = lowStock;
+            document.getElementById('outStock').textContent = outStock;
+            document.getElementById('totalValue').textContent = utils.formatMoney(totalValue);
+        }
+        
+        function filterProducts() {
+            renderProducts();
+        }
+        
+        function openAddStockModal(id, name, currentStock) {
+            document.getElementById('modalStockTitle').textContent = 'Adicionar Estoque';
+            document.getElementById('productId').value = id;
+            document.getElementById('productName').value = name;
+            document.getElementById('currentStock').value = `${currentStock} unidades`;
+            document.getElementById('stockAction').value = 'add';
+            document.getElementById('quantity').value = '';
+            document.getElementById('stockModal').classList.add('show');
+        }
+        
+        function openRemoveStockModal(id, name, currentStock) {
+            if (currentStock === 0) {
+                utils.showToast('Não é possível remover estoque de um produto sem estoque', 'error');
+                return;
+            }
+            
+            document.getElementById('modalStockTitle').textContent = 'Remover Estoque';
+            document.getElementById('productId').value = id;
+            document.getElementById('productName').value = name;
+            document.getElementById('currentStock').value = `${currentStock} unidades`;
+            document.getElementById('stockAction').value = 'remove';
+            document.getElementById('quantity').value = '';
+            document.getElementById('stockModal').classList.add('show');
+        }
+        
+        function closeStockModal() {
+            document.getElementById('stockModal').classList.remove('show');
+        }
+        
+        document.getElementById('stockForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const productId = parseInt(document.getElementById('productId').value);
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const action = document.getElementById('stockAction').value;
+            
+            const saveBtn = document.getElementById('saveStockBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+            
+            try {
+                const result = await produtos.updateEstoque(productId, action === 'add' ? quantity : -quantity);
+                
+                if (result.success) {
+                    utils.showToast(action === 'add' ? 'Estoque adicionado com sucesso!' : 'Estoque removido com sucesso!', 'success');
+                    closeStockModal();
+                    await loadProducts();
+                } else {
+                    utils.showToast(result.error || 'Erro ao atualizar estoque', 'error');
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar estoque:', error);
+                utils.showToast('Erro ao atualizar estoque', 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> Confirmar';
+            }
+        });
+        
+        // Fechar modal ao clicar fora
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('stockModal');
+            if (e.target === modal) {
+                closeStockModal();
+            }
+        });
+    </script>
+</body>
+</html>

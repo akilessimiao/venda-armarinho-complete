@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leitura Z - JAVA CONVENIÊNCIA 24H</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .navbar-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: white;
+            color: #1e3c72;
+        }
+        
+        .btn-primary:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #45a049;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        .page-header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .page-title {
+            font-size: 32px;
+            color: #1e3c72;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .page-subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .z-report {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            border: 3px solid #1e3c72;
+        }
+        
+        .report-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #1e3c72;
+            padding-bottom: 20px;
+        }
+        
+        .report-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+        
+        .report-date {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .report-section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .report-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #1e3c72;
+        }
+        
+        .item-label {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .item-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e3c72;
+        }
+        
+        .report-total {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .total-label {
+            font-size: 18px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .total-value {
+            font-size: 42px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+        
+        .btn-generate {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #4caf50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+        }
+        
+        .btn-generate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.6);
+        }
+        
+        .btn-generate:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .history-list {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .history-list h3 {
+            font-size: 20px;
+            color: #1e3c72;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .history-table th {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .history-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .history-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 60, 114, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            color: white;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-top: 5px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .report-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .z-report {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div>Carregando dados...</div>
+    </div>
+    
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <i class="fas fa-file-invoice-dollar"></i>
+            <span>Leitura Z</span>
+        </div>
+        <div class="navbar-actions">
+            <button class="btn btn-secondary" onclick="window.location.href='admin.html'">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">📄 Leitura Z - Fechamento de Caixa</h1>
+            <p class="page-subtitle">Relatório completo de vendas e movimentações do dia</p>
+        </div>
+        
+        <!-- Z Report -->
+        <div class="z-report" id="zReport">
+            <div class="report-header">
+                <h2 class="report-title">JAVA CONVENIÊNCIA 24H</h2>
+                <p class="report-date" id="reportDate">Carregando...</p>
+            </div>
+            
+            <div class="report-section">
+                <h3 class="section-title">📊 Resumo de Vendas</h3>
+                <div class="report-grid">
+                    <div class="report-item">
+                        <div class="item-label">Total de Vendas</div>
+                        <div class="item-value" id="totalSales">R$ 0,00</div>
+                    </div>
+                    <div class="report-item">
+                        <div class="item-label">Quantidade de Vendas</div>
+                        <div class="item-value" id="salesCount">0</div>
+                    </div>
+                    <div class="report-item">
+                        <div class="item-label">Ticket Médio</div>
+                        <div class="item-value" id="avgTicket">R$ 0,00</div>
+                    </div>
+                    <div class="report-item">
+                        <div class="item-label">Itens Vendidos</div>
+                        <div class="item-value" id="itemsSold">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="report-section">
+                <h3 class="section-title">💰 Sangrias</h3>
+                <div class="report-grid">
+                    <div class="report-item">
+                        <div class="item-label">Total de Sangrias</div>
+                        <div class="item-value" id="totalSangrias">R$ 0,00</div>
+                    </div>
+                    <div class="report-item">
+                        <div class="item-label">Quantidade de Sangrias</div>
+                        <div class="item-value" id="sangriasCount">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="report-total">
+                <div class="total-label">TOTAL DO CAIXA</div>
+                <div class="total-value" id="totalCaixa">R$ 0,00</div>
+            </div>
+            
+            <button class="btn-generate" id="generateBtn" onclick="generateZReport()">
+                <i class="fas fa-file-invoice"></i> Gerar Leitura Z
+            </button>
+        </div>
+        
+        <!-- History -->
+        <div class="history-list">
+            <h3><i class="fas fa-history"></i> Histórico de Leituras Z</h3>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Data/Hora</th>
+                        <th>Total Vendas</th>
+                        <th>Total Sangrias</th>
+                        <th>Total Caixa</th>
+                        <th>Operador</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody">
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px; color: #999;">
+                            <i class="fas fa-hourglass-half" style="font-size: 40px; margin-bottom: 10px;"></i>
+                            <p>Nenhuma leitura Z registrada</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script src="config.js"></script>
+    <script>
+        let currentReport = null;
+        
+        // Verificar login
+        document.addEventListener('DOMContentLoaded', async function() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            
+            if (!auth.isLoggedIn() || !auth.checkSession()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Carregar dados
+            await loadReportData();
+            await loadHistory();
+            
+            // Esconder loading
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+            }, 500);
+        });
+        
+        async function loadReportData() {
+            try {
+                // Vendas de hoje
+                const vendasHoje = await vendas.getToday();
+                
+                const totalVendas = vendasHoje.reduce((sum, v) => sum + (v.total || 0), 0);
+                const qtdVendas = vendasHoje.length;
+                const ticketMedio = qtdVendas > 0 ? totalVendas / qtdVendas : 0;
+                
+                // Itens vendidos
+                let totalItens = 0;
+                for (const venda of vendasHoje) {
+                    const itens = await itensVenda.getByVendaId(venda.id);
+                    totalItens += itens.length;
+                }
+                
+                // Sangrias de hoje
+                const today = new Date().toISOString().split('T')[0];
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const tomorrowStr = tomorrow.toISOString().split('T')[0];
+                
+                const sangriasHoje = await sangria.getByDateRange(
+                    `${today}T00:00:00`,
+                    `${tomorrowStr}T00:00:00`
+                );
+                
+                const totalSangrias = sangriasHoje.reduce((sum, s) => sum + (s.valor || 0), 0);
+                const qtdSangrias = sangriasHoje.length;
+                
+                // Atualizar interface
+                document.getElementById('reportDate').textContent = new Date().toLocaleDateString('pt-BR', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                document.getElementById('totalSales').textContent = utils.formatMoney(totalVendas);
+                document.getElementById('salesCount').textContent = qtdVendas;
+                document.getElementById('avgTicket').textContent = utils.formatMoney(ticketMedio);
+                document.getElementById('itemsSold').textContent = totalItens;
+                document.getElementById('totalSangrias').textContent = utils.formatMoney(totalSangrias);
+                document.getElementById('sangriasCount').textContent = qtdSangrias;
+                
+                const totalCaixa = totalVendas - totalSangrias;
+                document.getElementById('totalCaixa').textContent = utils.formatMoney(totalCaixa);
+                
+                // Salvar dados para geração
+                currentReport = {
+                    data: new Date().toISOString(),
+                    total_vendas: totalVendas,
+                    qtd_vendas: qtdVendas,
+                    ticket_medio: ticketMedio,
+                    itens_vendidos: totalItens,
+                    total_sangrias: totalSangrias,
+                    qtd_sangrias: qtdSangrias,
+                    total_caixa: totalCaixa,
+                    operador_id: auth.getCurrentUser().id
+                };
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+                utils.showToast('Erro ao carregar dados', 'error');
+            }
+        }
+        
+        async function generateZReport() {
+            if (!currentReport) {
+                utils.showToast('Nenhum dado para gerar leitura Z', 'error');
+                return;
+            }
+            
+            const btn = document.getElementById('generateBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando...';
+            
+            try {
+                const result = await leituraZ.create(currentReport);
+                
+                if (result.success) {
+                    utils.showToast('Leitura Z gerada com sucesso!', 'success');
+                    await loadHistory();
+                    
+                    // Limpar dados após geração
+                    setTimeout(() => {
+                        alert('Leitura Z gerada com sucesso!\n\nData: ' + new Date().toLocaleString('pt-BR'));
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    utils.showToast(result.error || 'Erro ao gerar leitura Z', 'error');
+                }
+            } catch (error) {
+                console.error('Erro ao gerar leitura Z:', error);
+                utils.showToast('Erro ao gerar leitura Z', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-file-invoice"></i> Gerar Leitura Z';
+            }
+        }
+        
+        async function loadHistory() {
+            try {
+                const history = await leituraZ.getAll();
+                
+                if (history.length === 0) {
+                    document.getElementById('historyBody').innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 40px; color: #999;">
+                                <i class="fas fa-file-invoice" style="font-size: 40px; margin-bottom: 10px;"></i>
+                                <p>Nenhuma leitura Z registrada</p>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                document.getElementById('historyBody').innerHTML = history.map(lz => `
+                    <tr>
+                        <td>${utils.formatDate(lz.created_at)}</td>
+                        <td>${utils.formatMoney(lz.total_vendas)}</td>
+                        <td>${utils.formatMoney(lz.total_sangrias)}</td>
+                        <td>${utils.formatMoney(lz.total_caixa)}</td>
+                        <td>${lz.operador_id}</td>
+                    </tr>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Erro ao carregar histórico:', error);
+            }
+        }
+    </script>
+</body>
+</html>

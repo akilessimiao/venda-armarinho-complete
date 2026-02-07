@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios - JAVA CONVENIÊNCIA 24H</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .navbar-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: white;
+            color: #1e3c72;
+        }
+        
+        .btn-primary:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        .page-header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .page-title {
+            font-size: 32px;
+            color: #1e3c72;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .filter-group label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .filter-group input, .filter-group select {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+        
+        .btn-filter {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            grid-column: span 2;
+        }
+        
+        .btn-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.4);
+        }
+        
+        .report-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #1e3c72;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            color: #1e3c72;
+            font-weight: 700;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.3);
+        }
+        
+        .summary-label {
+            font-size: 15px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .summary-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+        
+        .chart-container {
+            height: 400px;
+            margin-bottom: 30px;
+        }
+        
+        .sales-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .sales-table th {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 120px;
+        }
+        
+        .sales-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .sales-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 60, 114, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            color: white;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-top: 5px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .filters {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-filter {
+                grid-column: span 1;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div>Carregando relatórios...</div>
+    </div>
+    
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <i class="fas fa-chart-bar"></i>
+            <span>Relatórios Financeiros</span>
+        </div>
+        <div class="navbar-actions">
+            <button class="btn btn-secondary" onclick="window.location.href='admin.html'">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">📊 Relatórios Financeiros</h1>
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="startDate">Data Inicial</label>
+                    <input type="date" id="startDate">
+                </div>
+                <div class="filter-group">
+                    <label for="endDate">Data Final</label>
+                    <input type="date" id="endDate">
+                </div>
+                <button class="btn-filter" onclick="loadReports()">
+                    <i class="fas fa-search"></i> Filtrar Relatórios
+                </button>
+            </div>
+        </div>
+        
+        <!-- Summary Cards -->
+        <div class="report-section">
+            <div class="section-header">
+                <h2 class="section-title">📈 Resumo Financeiro</h2>
+            </div>
+            
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-label">Total de Vendas</div>
+                    <div class="summary-value" id="totalSales">R$ 0,00</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Quantidade de Vendas</div>
+                    <div class="summary-value" id="salesCount">0</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Ticket Médio</div>
+                    <div class="summary-value" id="avgTicket">R$ 0,00</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Total de Sangrias</div>
+                    <div class="summary-value" id="totalSangrias">R$ 0,00</div>
+                </div>
+            </div>
+            
+            <div class="summary-grid">
+                <div class="summary-card" style="background: linear-gradient(135deg, #4caf50, #45a049);">
+                    <div class="summary-label">Total Líquido</div>
+                    <div class="summary-value" id="totalLiquido">R$ 0,00</div>
+                </div>
+                <div class="summary-card" style="background: linear-gradient(135deg, #ff9800, #f57c00);">
+                    <div class="summary-label">Média Diária</div>
+                    <div class="summary-value" id="avgDaily">R$ 0,00</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sales Table -->
+        <div class="report-section">
+            <div class="section-header">
+                <h2 class="section-title">📋 Detalhamento de Vendas</h2>
+            </div>
+            
+            <table class="sales-table">
+                <thead>
+                    <tr>
+                        <th>Data/Hora</th>
+                        <th>ID Venda</th>
+                        <th>Operador</th>
+                        <th>Itens</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody id="salesBody">
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px; color: #999;">
+                            <i class="fas fa-hourglass-half" style="font-size: 40px; margin-bottom: 10px;"></i>
+                            <p>Selecione um período para visualizar as vendas</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script src="config.js"></script>
+    <script>
+        // Verificar login
+        document.addEventListener('DOMContentLoaded', async function() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            
+            if (!auth.isLoggedIn() || !auth.checkSession()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Setar datas padrão (últimos 7 dias)
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - 7);
+            
+            document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
+            document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+            
+            // Carregar relatórios
+            await loadReports();
+            
+            // Esconder loading
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+            }, 500);
+        });
+        
+        async function loadReports() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            if (!startDate || !endDate) {
+                utils.showToast('Por favor, selecione ambas as datas', 'error');
+                return;
+            }
+            
+            // Adicionar um dia ao endDate para incluir todo o dia
+            const endDatePlusOne = new Date(endDate);
+            endDatePlusOne.setDate(endDatePlusOne.getDate() + 1);
+            
+            try {
+                // Carregar vendas
+                const vendasData = await vendas.getByDateRange(
+                    `${startDate}T00:00:00`,
+                    `${endDatePlusOne.toISOString().split('T')[0]}T00:00:00`
+                );
+                
+                // Carregar sangrias
+                const sangriasData = await sangria.getByDateRange(
+                    `${startDate}T00:00:00`,
+                    `${endDatePlusOne.toISOString().split('T')[0]}T00:00:00`
+                );
+                
+                // Calcular totais
+                const totalVendas = vendasData.reduce((sum, v) => sum + (v.total || 0), 0);
+                const qtdVendas = vendasData.length;
+                const ticketMedio = qtdVendas > 0 ? totalVendas / qtdVendas : 0;
+                const totalSangrias = sangriasData.reduce((sum, s) => sum + (s.valor || 0), 0);
+                const totalLiquido = totalVendas - totalSangrias;
+                
+                // Calcular média diária
+                const dias = Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)) + 1;
+                const mediaDiaria = dias > 0 ? totalVendas / dias : 0;
+                
+                // Atualizar cards
+                document.getElementById('totalSales').textContent = utils.formatMoney(totalVendas);
+                document.getElementById('salesCount').textContent = qtdVendas;
+                document.getElementById('avgTicket').textContent = utils.formatMoney(ticketMedio);
+                document.getElementById('totalSangrias').textContent = utils.formatMoney(totalSangrias);
+                document.getElementById('totalLiquido').textContent = utils.formatMoney(totalLiquido);
+                document.getElementById('avgDaily').textContent = utils.formatMoney(mediaDiaria);
+                
+                // Renderizar tabela de vendas
+                renderSalesTable(vendasData);
+                
+            } catch (error) {
+                console.error('Erro ao carregar relatórios:', error);
+                utils.showToast('Erro ao carregar relatórios', 'error');
+            }
+        }
+        
+        async function renderSalesTable(vendas) {
+            const salesBody = document.getElementById('salesBody');
+            
+            if (vendas.length === 0) {
+                salesBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px; color: #999;">
+                            <i class="fas fa-box-open" style="font-size: 40px; margin-bottom: 10px;"></i>
+                            <p>Nenhuma venda encontrada no período selecionado</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            let html = '';
+            for (const venda of vendas) {
+                const itens = await itensVenda.getByVendaId(venda.id);
+                html += `
+                    <tr>
+                        <td>${utils.formatDate(venda.created_at)}</td>
+                        <td>#${venda.id}</td>
+                        <td>${venda.operador_id}</td>
+                        <td>${itens.length}</td>
+                        <td><strong>${utils.formatMoney(venda.total)}</strong></td>
+                    </tr>
+                `;
+            }
+            
+            salesBody.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

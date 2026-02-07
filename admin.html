@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - JAVA CONVENIÊNCIA 24H</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .navbar-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: white;
+            color: #1e3c72;
+        }
+        
+        .btn-primary:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+        
+        .icon-sales { background: linear-gradient(135deg, #ff9800, #ff5722); color: white; }
+        .icon-products { background: linear-gradient(135deg, #2196f3, #1976d2); color: white; }
+        .icon-stock { background: linear-gradient(135deg, #4caf50, #2e7d32); color: white; }
+        .icon-cash { background: linear-gradient(135deg, #9c27b0, #673ab7); color: white; }
+        
+        .card-title {
+            font-size: 18px;
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .card-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+        
+        .card-footer {
+            color: #666;
+            font-size: 13px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .quick-actions {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .quick-actions h3 {
+            font-size: 20px;
+            color: #1e3c72;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .action-btn {
+            padding: 20px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            text-align: center;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(30, 60, 114, 0.5);
+        }
+        
+        .action-btn i {
+            font-size: 30px;
+        }
+        
+        .recent-activity {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .recent-activity h3 {
+            font-size: 20px;
+            color: #1e3c72;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .activity-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #1e3c72;
+        }
+        
+        .activity-time {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .activity-desc {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 60, 114, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            color: white;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-top: 5px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            z-index: 10000;
+            animation: slideIn 0.3s ease-in;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .toast-success { background: #4caf50; }
+        .toast-error { background: #f44336; }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div>Carregando dados...</div>
+    </div>
+    
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <i class="fas fa-crown"></i>
+            <span>Painel Administrativo</span>
+        </div>
+        <div class="navbar-actions">
+            <span id="userName">Carregando...</span>
+            <button class="btn btn-secondary" onclick="auth.logout(); window.location.href='login.html'">
+                <i class="fas fa-sign-out-alt"></i> Sair
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Dashboard Cards -->
+        <div class="dashboard">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon icon-sales">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Vendas Hoje</div>
+                        <div class="card-value" id="salesToday">R$ 0,00</div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <i class="fas fa-chart-line"></i> Total de vendas realizadas hoje
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon icon-products">
+                        <i class="fas fa-boxes"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Total de Produtos</div>
+                        <div class="card-value" id="totalProducts">0</div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <i class="fas fa-database"></i> Produtos cadastrados no sistema
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon icon-stock">
+                        <i class="fas fa-warehouse"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Produtos em Estoque</div>
+                        <div class="card-value" id="inStock">0</div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <i class="fas fa-box"></i> Produtos com estoque disponível
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon icon-cash">
+                        <i class="fas fa-cash-register"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Sangrias Hoje</div>
+                        <div class="card-value" id="sangriasToday">R$ 0,00</div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <i class="fas fa-money-bill-wave"></i> Total de sangrias realizadas hoje
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h3><i class="fas fa-bolt"></i> Ações Rápidas</h3>
+            <div class="actions-grid">
+                <button class="action-btn" onclick="window.location.href='produtos.html'">
+                    <i class="fas fa-boxes"></i>
+                    Gerenciar Produtos
+                </button>
+                <button class="action-btn" onclick="window.location.href='estoque.html'">
+                    <i class="fas fa-warehouse"></i>
+                    Controle de Estoque
+                </button>
+                <button class="action-btn" onclick="window.location.href='leitura-z.html'">
+                    <i class="fas fa-file-invoice"></i>
+                    Leitura Z
+                </button>
+                <button class="action-btn" onclick="window.location.href='relatorios.html'">
+                    <i class="fas fa-chart-bar"></i>
+                    Relatórios Financeiros
+                </button>
+                <button class="action-btn" onclick="window.location.href='cupom.html'">
+                    <i class="fas fa-print"></i>
+                    Reimpressão de Cupom
+                </button>
+                <button class="action-btn" onclick="backup.download()">
+                    <i class="fas fa-download"></i>
+                    Backup de Dados
+                </button>
+            </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div class="recent-activity">
+            <h3><i class="fas fa-history"></i> Atividades Recentes</h3>
+            <div class="activity-list" id="activityList">
+                <div style="text-align: center; padding: 30px; color: #999;">
+                    <i class="fas fa-hourglass-half" style="font-size: 40px; margin-bottom: 10px;"></i>
+                    <p>Nenhuma atividade recente</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="config.js"></script>
+    <script>
+        // Verificar login e permissões
+        document.addEventListener('DOMContentLoaded', async function() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            
+            // Verificar se está logado
+            if (!auth.isLoggedIn() || !auth.checkSession()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Verificar se é admin
+            if (!auth.isAdmin()) {
+                alert('Acesso restrito a administradores!');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Carregar dados do usuário
+            const user = auth.getCurrentUser();
+            document.getElementById('userName').textContent = user.name;
+            
+            // Carregar dados do dashboard
+            await loadDashboardData();
+            
+            // Esconder loading screen
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+            }, 500);
+        });
+        
+        async function loadDashboardData() {
+            try {
+                // Vendas de hoje
+                const vendasHoje = await vendas.getToday();
+                const totalVendas = vendasHoje.reduce((sum, venda) => sum + (venda.total || 0), 0);
+                document.getElementById('salesToday').textContent = utils.formatMoney(totalVendas);
+                
+                // Total de produtos
+                const allProducts = await produtos.getAll();
+                document.getElementById('totalProducts').textContent = allProducts.length;
+                
+                // Produtos em estoque
+                const inStockCount = allProducts.filter(p => p.estoque > 0).length;
+                document.getElementById('inStock').textContent = inStockCount;
+                
+                // Sangrias de hoje
+                const today = new Date().toISOString().split('T')[0];
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const tomorrowStr = tomorrow.toISOString().split('T')[0];
+                
+                const sangriasHoje = await sangria.getByDateRange(
+                    `${today}T00:00:00`,
+                    `${tomorrowStr}T00:00:00`
+                );
+                
+                const totalSangrias = sangriasHoje.reduce((sum, s) => sum + (s.valor || 0), 0);
+                document.getElementById('sangriasToday').textContent = utils.formatMoney(totalSangrias);
+                
+                // Atividades recentes
+                loadRecentActivity(vendasHoje, sangriasHoje);
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+                utils.showToast('Erro ao carregar dados do dashboard', 'error');
+            }
+        }
+        
+        function loadRecentActivity(vendas, sangrias) {
+            const activityList = document.getElementById('activityList');
+            
+            let activities = [];
+            
+            // Adicionar vendas
+            vendas.slice(0, 5).forEach(venda => {
+                activities.push({
+                    time: venda.created_at,
+                    desc: `Venda #${venda.id} - ${utils.formatMoney(venda.total)}`,
+                    type: 'venda'
+                });
+            });
+            
+            // Adicionar sangrias
+            sangrias.slice(0, 5).forEach(s => {
+                activities.push({
+                    time: s.created_at,
+                    desc: `Sangria de ${utils.formatMoney(s.valor)} - ${s.descricao || 'Sem descrição'}`,
+                    type: 'sangria'
+                });
+            });
+            
+            // Ordenar por data
+            activities.sort((a, b) => new Date(b.time) - new Date(a.time));
+            
+            if (activities.length === 0) {
+                activityList.innerHTML = `
+                    <div style="text-align: center; padding: 30px; color: #999;">
+                        <i class="fas fa-smile" style="font-size: 40px; margin-bottom: 10px;"></i>
+                        <p>Nenhuma atividade recente encontrada</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            activityList.innerHTML = activities.map(act => `
+                <div class="activity-item">
+                    <div class="activity-time">
+                        <i class="fas fa-clock"></i> ${utils.formatDate(act.time)}
+                    </div>
+                    <div class="activity-desc">
+                        ${act.desc}
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sangria - JAVA CONVENIÊNCIA 24H</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .sangria-container {
+            background: white;
+            padding: 50px;
+            border-radius: 25px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+            width: 100%;
+            max-width: 600px;
+            animation: fadeIn 0.6s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .sangria-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .sangria-header i {
+            font-size: 80px;
+            color: #f44336;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .sangria-header h1 {
+            color: #1e3c72;
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+        
+        .sangria-header p {
+            color: #666;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 3px solid #e0e6ed;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.4s;
+            background: #f8f9fa;
+            font-weight: 500;
+        }
+        
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #1e3c72;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(30, 60, 114, 0.15);
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-cancel {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-cancel:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+        }
+        
+        .btn-confirm {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+            box-shadow: 0 6px 20px rgba(244, 67, 54, 0.5);
+        }
+        
+        .btn-confirm:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(244, 67, 54, 0.7);
+        }
+        
+        .btn-confirm:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .admin-auth {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .admin-auth h3 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        
+        .admin-auth p {
+            color: #856404;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 5px solid #c62828;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 5px solid #2e7d32;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(30, 60, 114, 0.95);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .navbar-actions button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .navbar-actions button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        @media (max-width: 620px) {
+            .sangria-container {
+                padding: 35px 25px;
+                margin: 15px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>Sangria de Caixa</span>
+        </div>
+        <div class="navbar-actions">
+            <button onclick="window.location.href='index.html'">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="sangria-container">
+        <div class="sangria-header">
+            <i class="fas fa-money-bill-wave"></i>
+            <h1>Sangria de Caixa</h1>
+            <p>Retirada de valores do caixa</p>
+        </div>
+        
+        <form id="sangriaForm">
+            <div class="form-group">
+                <label for="valor"><i class="fas fa-dollar-sign"></i> Valor (R$) *</label>
+                <input type="number" id="valor" step="0.01" min="0.01" required placeholder="Digite o valor da sangria">
+            </div>
+            
+            <div class="form-group">
+                <label for="descricao"><i class="fas fa-sticky-note"></i> Descrição *</label>
+                <textarea id="descricao" required placeholder="Descreva o motivo da sangria..."></textarea>
+            </div>
+            
+            <div class="admin-auth">
+                <h3><i class="fas fa-shield-alt"></i> Autenticação Necessária</h3>
+                <p>Por segurança, é necessário confirmar com a senha do administrador</p>
+                <div class="form-group">
+                    <label for="adminPassword"><i class="fas fa-key"></i> Senha do Administrador *</label>
+                    <input type="password" id="adminPassword" required placeholder="Digite a senha do admin">
+                </div>
+            </div>
+            
+            <div id="errorMessage" class="error-message">
+                <i class="fas fa-exclamation-triangle"></i> 
+                <span id="errorText"></span>
+            </div>
+            
+            <div id="successMessage" class="success-message">
+                <i class="fas fa-check-circle"></i> 
+                <span id="successText"></span>
+            </div>
+            
+            <div class="btn-group">
+                <button type="button" class="btn btn-cancel" onclick="window.location.href='index.html'">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button type="submit" class="btn btn-confirm" id="confirmBtn">
+                    <i class="fas fa-check"></i> Confirmar Sangria
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <script src="config.js"></script>
+    <script>
+        // Verificar login
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!auth.isLoggedIn() || !auth.checkSession()) {
+                window.location.href = 'login.html';
+                return;
+            }
+        });
+        
+        document.getElementById('sangriaForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const valor = parseFloat(document.getElementById('valor').value);
+            const descricao = document.getElementById('descricao').value.trim();
+            const adminPassword = document.getElementById('adminPassword').value.trim();
+            
+            const confirmBtn = document.getElementById('confirmBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            const successMessage = document.getElementById('successMessage');
+            const successText = document.getElementById('successText');
+            
+            // Validar campos
+            if (!valor || valor <= 0) {
+                showError('Por favor, informe um valor válido para a sangria');
+                return;
+            }
+            
+            if (!descricao) {
+                showError('Por favor, informe a descrição da sangria');
+                return;
+            }
+            
+            if (!adminPassword) {
+                showError('Por favor, informe a senha do administrador');
+                return;
+            }
+            
+            // Desabilitar botão
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+            hideMessage();
+            
+            try {
+                // Verificar senha do admin
+                const { data, error } = await supabase
+                    .from('usuarios')
+                    .select('*')
+                    .eq('username', 'java1814')
+                    .eq('password', adminPassword)
+                    .eq('role', 'admin')
+                    .single();
+                
+                if (error || !data) {
+                    showError('Senha do administrador incorreta!');
+                    confirmBtn.disabled = false;
+                    confirmBtn.innerHTML = '<i class="fas fa-check"></i> Confirmar Sangria';
+                    return;
+                }
+                
+                // Criar sangria
+                const sangriaData = {
+                    valor: valor,
+                    descricao: descricao,
+                    operador_id: auth.getCurrentUser().id,
+                    created_at: new Date().toISOString()
+                };
+                
+                const result = await sangria.create(sangriaData);
+                
+                if (result.success) {
+                    showSuccess('Sangria registrada com sucesso!');
+                    
+                    // Limpar formulário
+                    document.getElementById('sangriaForm').reset();
+                    
+                    // Redirecionar após 2 segundos
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } else {
+                    showError(result.error || 'Erro ao registrar sangria');
+                }
+            } catch (error) {
+                console.error('Erro ao registrar sangria:', error);
+                showError('Erro ao conectar com o servidor');
+            } finally {
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = '<i class="fas fa-check"></i> Confirmar Sangria';
+            }
+        });
+        
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').classList.add('show');
+            document.getElementById('successMessage').classList.remove('show');
+        }
+        
+        function showSuccess(message) {
+            document.getElementById('successText').textContent = message;
+            document.getElementById('successMessage').classList.add('show');
+            document.getElementById('errorMessage').classList.remove('show');
+        }
+        
+        function hideMessage() {
+            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('successMessage').classList.remove('show');
+        }
+    </script>
+</body>
+</html>
