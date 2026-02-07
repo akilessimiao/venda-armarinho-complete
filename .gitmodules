@@ -1,0 +1,3 @@
+[submodule "original-repo"]
+	path = original-repo
+	url = https://github.com/akilessimiao/venda-armarinho-v3.1.git
