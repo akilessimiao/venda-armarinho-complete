@@ -1,0 +1,29 @@
+{
+  "name": "venda-armarinho-complete",
+  "version": "1.0.0",
+  "description": "Plataforma completa de e-commerce para venda de materiais de costura e artesanato",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm -r dev",
+    "build": "pnpm -r build",
+    "build:web": "pnpm -F multiplatform build:web",
+    "dev:web": "pnpm -F multiplatform dev:web",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "format": "pnpm -r format"
+  },
+  "keywords": [
+    "ecommerce",
+    "costura",
+    "artesanato",
+    "venda",
+    "plataforma"
+  ],
+  "author": "Akiles Simiao",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}

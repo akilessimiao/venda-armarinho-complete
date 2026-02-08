@@ -1,0 +1,4 @@
+packages:
+  - 'multiplatform'
+  - 'api'
+  - 'docs'

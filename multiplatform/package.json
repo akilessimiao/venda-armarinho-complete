@@ -1,0 +1,15 @@
+{
+  "name": "multiplatform",
+  "version": "1.0.0",
+  "description": "Aplicação multiplataforma web e mobile",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:web": "cd packages/web && npm run dev",
+    "build:web": "cd packages/web && npm run build",
+    "preview:web": "cd packages/web && npm run preview"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}
