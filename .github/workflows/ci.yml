@@ -15,34 +15,25 @@ jobs:
         node-version: [18.x, 20.x]
     
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-    
+    - uses: actions/checkout@v4 # Atualizado para v4
+
     - name: Install pnpm
       uses: pnpm/action-setup@v2
       with:
         version: 8
     
-    - name: Get pnpm store directory
-      id: pnpm-cache
-      shell: bash
-      run: |
-        echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-    
-    - name: Setup pnpm cache
-      uses: actions/cache@v3
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4 # Atualizado para v4
       with:
-        path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-        restore-keys: |
-          ${{ runner.os }}-pnpm-store-
+        node-version: ${{ matrix.node-version }}
+        cache: 'pnpm' # Otimização: o setup-node já lida com o cache do pnpm nativamente
     
+    # Removido os passos manuais de cache (Get pnpm store e Setup pnpm cache) 
+    # pois o 'cache: pnpm' acima é mais eficiente e menos propenso a erros.
+
     - name: Install dependencies (API)
-      run: cd api && pnpm install
+      working-directory: ./api
+      run: pnpm install
     
     - name: Lint (API)
       working-directory: ./api
