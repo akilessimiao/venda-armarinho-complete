@@ -5,7 +5,7 @@
   "installCommand": "echo 'No dependencies to install'",
   "framework": null,
   "rewrites": [
-    { "source": "/", "destination": "/login.html" },
+    { "source": "/login", "destination": "/login.html" },
     { "source": "/index", "destination": "/index.html" },
     { "source": "/index.html", "destination": "/index.html" },
     { "source": "/admin", "destination": "/admin.html" },
