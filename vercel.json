@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "buildCommand": "echo 'Static site - no build needed'",
   "outputDirectory": ".",
   "installCommand": "echo 'No dependencies to install'",
