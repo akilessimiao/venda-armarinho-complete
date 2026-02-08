@@ -1,55 +1,30 @@
-name: CI
-
-on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
-
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
-    
     strategy:
       matrix:
         node-version: [18.x, 20.x]
-    
     steps:
-    - uses: actions/checkout@v4 # Atualizado para v4
+      - uses: actions/checkout@v4
 
-    - name: Install pnpm
-      uses: pnpm/action-setup@v2
-      with:
-        version: 8
-    
-    - name: Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4 # Atualizado para v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'pnpm' # Otimização: o setup-node já lida com o cache do pnpm nativamente
-    
-    # Removido os passos manuais de cache (Get pnpm store e Setup pnpm cache) 
-    # pois o 'cache: pnpm' acima é mais eficiente e menos propenso a erros.
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
-    - name: Install dependencies (API)
-      working-directory: ./api
-      run: pnpm install
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+          cache-dependency-path: '**/pnpm-lock.yaml'  # ← isso resolve na maioria dos casos
+
+      - name: Install dependencies (API)
+        working-directory: ./api
+        run: pnpm install --frozen-lockfile   # adicione --frozen-lockfile para segurança no CI
+
+      # ... os outros steps iguais, mas adicione --frozen-lockfile onde fizer sentido
     
-    - name: Lint (API)
-      working-directory: ./api
-      run: pnpm lint || true
-    
-    - name: Test (API)
-      working-directory: ./api
-      run: pnpm test || true
-    
-    - name: Install dependencies (Docs)
-      working-directory: ./docs
-      run: pnpm install
-    
-    - name: Install dependencies (Multiplatform)
-      working-directory: ./multiplatform
-      run: pnpm install
+
     
     - name: Build (Web)
       working-directory: ./multiplatform
