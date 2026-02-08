@@ -42,8 +42,7 @@ jobs:
           ${{ runner.os }}-pnpm-store-
     
     - name: Install dependencies (API)
-      working-directory: ./api
-      run: pnpm install
+      run: cd api && pnpm install
     
     - name: Lint (API)
       working-directory: ./api
